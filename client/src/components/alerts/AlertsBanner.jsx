@@ -24,17 +24,19 @@ export default function AlertsBanner({ socketAlerts = [] }) {
     const loadAlerts = async () => {
       try {
         const data = await fetchAlerts();
-        if (data?.length) setAlerts(data);
+        if (Array.isArray(data) && data.length) setAlerts(data);
       } catch (err) { /* Use defaults */ }
     };
     loadAlerts();
   }, []);
 
   useEffect(() => {
-    if (socketAlerts.length > 0) setAlerts(prev => [...socketAlerts, ...prev]);
+    const sa = Array.isArray(socketAlerts) ? socketAlerts : [];
+    if (sa.length > 0) setAlerts(prev => [...sa, ...prev]);
   }, [socketAlerts]);
 
-  const visibleAlerts = alerts.filter(a => a.active && !dismissed.has(a._id));
+  const safeAlerts = Array.isArray(alerts) ? alerts : defaultAlerts;
+  const visibleAlerts = safeAlerts.filter(a => a.active && !dismissed.has(a._id));
   if (visibleAlerts.length === 0) return null;
 
   return (
