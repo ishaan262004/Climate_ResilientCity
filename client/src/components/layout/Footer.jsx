@@ -68,7 +68,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
-            © 2024 Resilient City. Built for a sustainable future.
+            © 2026 Resilient City. Built for a sustainable future by COMPYUTE.
           </p>
           <p className="text-xs text-white/30">
             Climate data for Delhi, India
