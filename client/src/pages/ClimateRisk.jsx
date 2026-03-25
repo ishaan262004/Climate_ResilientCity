@@ -175,20 +175,20 @@ export default function ClimateRiskPage() {
       <section className="container-custom px-4 mb-8">
         {loading ? (
           <Skeleton />
-        ) : data ? (
+        ) : data?.risk ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <RiskCard type="Flood Risk"    icon={CloudRain} risk={data.risk.flood.risk}     percentage={data.risk.flood.percentage}     details={data.risk.flood.details}     delay={0}   extra={{ Rainfall: `${data.weather.rainfall}mm`, Drainage: '0.5' }} />
-            <RiskCard type="Heatwave Risk" icon={Flame}     risk={data.risk.heatwave.risk}  percentage={data.risk.heatwave.percentage}  details={data.risk.heatwave.details}  delay={0.1} extra={{ 'Heat Index': `${data.risk.heatwave.heatIndex ?? '--'}°C` }} />
-            <RiskCard type="Air Pollution" icon={Wind}      risk={data.risk.pollution.risk} percentage={data.risk.pollution.percentage} details={data.risk.pollution.details} delay={0.2} extra={{ AQI: data.weather.aqi, Category: data.risk.pollution.category }} />
+            <RiskCard type="Flood Risk"    icon={CloudRain} risk={data.risk.flood?.risk ?? 'Low'}     percentage={data.risk.flood?.percentage ?? 0}     details={data.risk.flood?.details ?? 'No data'}     delay={0}   extra={{ Rainfall: `${data.weather?.rainfall ?? '--'}mm`, Drainage: '0.5' }} />
+            <RiskCard type="Heatwave Risk" icon={Flame}     risk={data.risk.heatwave?.risk ?? 'Low'}  percentage={data.risk.heatwave?.percentage ?? 0}  details={data.risk.heatwave?.details ?? 'No data'}  delay={0.1} extra={{ 'Heat Index': `${data.risk.heatwave?.heatIndex ?? '--'}°C` }} />
+            <RiskCard type="Air Pollution" icon={Wind}      risk={data.risk.pollution?.risk ?? 'Low'} percentage={data.risk.pollution?.percentage ?? 0} details={data.risk.pollution?.details ?? 'No data'} delay={0.2} extra={{ AQI: data.weather?.aqi ?? '--', Category: data.risk.pollution?.category ?? '--' }} />
           </div>
         ) : null}
       </section>
 
       {/* Resilience + Recommendations */}
-      {data && !loading && (
+      {data?.resilience && !loading && (
         <section className="container-custom px-4 mb-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <ResilienceScoreCard score={data.resilience.score} grade={data.resilience.grade} summary={data.resilience.summary} delay={0.1} />
+            <ResilienceScoreCard score={data.resilience?.score ?? 0} grade={data.resilience?.grade ?? '--'} summary={data.resilience?.summary ?? 'No data'} delay={0.1} />
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -209,7 +209,7 @@ export default function ClimateRiskPage() {
                 <span className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium">AI Recommendations</span>
               </div>
               <ul className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                {data.recommendations.map((rec, i) => (
+                {(Array.isArray(data.recommendations) ? data.recommendations : []).map((rec, i) => (
                   <motion.li
                     key={i}
                     initial={{ opacity: 0, x: -8 }}
@@ -230,7 +230,7 @@ export default function ClimateRiskPage() {
 
 
       {/* 7-Day Historical Risk Simulation */}
-      {data && !loading && (
+      {data?.risk && !loading && (
         <section className="container-custom px-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -245,9 +245,9 @@ export default function ClimateRiskPage() {
             </div>
             <div className="grid grid-cols-3 gap-6">
               {[
-                { label: 'Flood',     color: '#3b82f6', pct: data.risk.flood.percentage },
-                { label: 'Heatwave', color: '#ef4444', pct: data.risk.heatwave.percentage },
-                { label: 'Pollution',color: '#a855f7', pct: data.risk.pollution.percentage },
+                { label: 'Flood',     color: '#3b82f6', pct: data.risk.flood?.percentage ?? 0 },
+                { label: 'Heatwave', color: '#ef4444', pct: data.risk.heatwave?.percentage ?? 0 },
+                { label: 'Pollution',color: '#a855f7', pct: data.risk.pollution?.percentage ?? 0 },
               ].map(({ label, color, pct }) => (
                 <div key={label}>
                   <p className="text-xs font-medium mb-3" style={{ color }}>{label}</p>
@@ -328,8 +328,8 @@ export default function ClimateRiskPage() {
           open={showPopup && !popupDismissed}
           onClose={() => { setShowPopup(false); setPopupDismissed(true); }}
           city={data.city}
-          highRisks={data.highRisks}
-          recommendations={data.recommendations}
+          highRisks={Array.isArray(data.highRisks) ? data.highRisks : []}
+          recommendations={Array.isArray(data.recommendations) ? data.recommendations : []}
         />
       )}
     </main>

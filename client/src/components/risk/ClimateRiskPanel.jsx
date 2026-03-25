@@ -138,41 +138,41 @@ export default function ClimateRiskPanel() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
           {loading ? (
             <><RiskSkeleton /><RiskSkeleton /><RiskSkeleton /></>
-          ) : data ? (
+          ) : data?.risk ? (
             <>
               <RiskCard
                 type="Flood Risk"
                 icon={CloudRain}
-                risk={data.risk.flood.risk}
-                percentage={data.risk.flood.percentage}
-                details={data.risk.flood.details}
+                risk={data.risk.flood?.risk ?? 'Low'}
+                percentage={data.risk.flood?.percentage ?? 0}
+                details={data.risk.flood?.details ?? 'No data available'}
                 delay={0}
-                extra={{ Rainfall: `${data.weather.rainfall}mm`, 'Drainage Factor': '0.5' }}
+                extra={{ Rainfall: `${data.weather?.rainfall ?? '--'}mm`, 'Drainage Factor': '0.5' }}
               />
               <RiskCard
                 type="Heatwave Risk"
                 icon={Flame}
-                risk={data.risk.heatwave.risk}
-                percentage={data.risk.heatwave.percentage}
-                details={data.risk.heatwave.details}
+                risk={data.risk.heatwave?.risk ?? 'Low'}
+                percentage={data.risk.heatwave?.percentage ?? 0}
+                details={data.risk.heatwave?.details ?? 'No data available'}
                 delay={0.1}
-                extra={{ 'Heat Index': `${data.risk.heatwave.heatIndex ?? '--'}°C` }}
+                extra={{ 'Heat Index': `${data.risk.heatwave?.heatIndex ?? '--'}°C` }}
               />
               <RiskCard
                 type="Air Pollution"
                 icon={Wind}
-                risk={data.risk.pollution.risk}
-                percentage={data.risk.pollution.percentage}
-                details={data.risk.pollution.details}
+                risk={data.risk.pollution?.risk ?? 'Low'}
+                percentage={data.risk.pollution?.percentage ?? 0}
+                details={data.risk.pollution?.details ?? 'No data available'}
                 delay={0.2}
-                extra={{ AQI: data.weather.aqi, Category: data.risk.pollution.category }}
+                extra={{ AQI: data.weather?.aqi ?? '--', Category: data.risk.pollution?.category ?? '--' }}
               />
             </>
           ) : null}
         </div>
 
         {/* Resilience Score + Recommendations */}
-        {data && !loading && (
+        {data?.resilience && !loading && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -181,9 +181,9 @@ export default function ClimateRiskPanel() {
           >
             {/* Resilience Score */}
             <ResilienceScoreCard
-              score={data.resilience.score}
-              grade={data.resilience.grade}
-              summary={data.resilience.summary}
+              score={data.resilience?.score ?? 0}
+              grade={data.resilience?.grade ?? '--'}
+              summary={data.resilience?.summary ?? 'No data available'}
               delay={0.15}
             />
 
@@ -200,7 +200,7 @@ export default function ClimateRiskPanel() {
                 AI Recommendations
               </p>
               <ul className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                {data.recommendations.map((rec, i) => (
+                {(Array.isArray(data.recommendations) ? data.recommendations : []).map((rec, i) => (
                   <li key={i} className="text-xs text-white/65 leading-relaxed flex gap-2 items-start bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.04]">
                     <span>{rec}</span>
                   </li>
@@ -217,8 +217,8 @@ export default function ClimateRiskPanel() {
           open={showAlert && !alertDismissed}
           onClose={() => { setShowAlert(false); setAlertDismissed(true); }}
           city={data.city}
-          highRisks={data.highRisks}
-          recommendations={data.recommendations}
+          highRisks={Array.isArray(data.highRisks) ? data.highRisks : []}
+          recommendations={Array.isArray(data.recommendations) ? data.recommendations : []}
         />
       )}
     </section>
