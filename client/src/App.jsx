@@ -7,6 +7,7 @@ import Heatwaves from './pages/Heatwaves';
 import AirPollution from './pages/AirPollution';
 import Flooding from './pages/Flooding';
 import Environment from './pages/Environment';
+import Weather from './pages/Weather';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/air-pollution" element={<AirPollution />} />
           <Route path="/flooding" element={<Flooding />} />
           <Route path="/environment" element={<Environment />} />
+          <Route path="/weather" element={<Weather />} />
         </Routes>
         <Footer />
         <AIChatbot />

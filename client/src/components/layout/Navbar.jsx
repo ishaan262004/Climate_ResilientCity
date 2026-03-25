@@ -5,6 +5,7 @@ import { Menu, X, Globe2 } from 'lucide-react';
 
 const navLinks = [
   { name: 'Home', path: '/' },
+  { name: 'Weather', path: '/weather' },
   { name: 'Heatwaves', path: '/heatwaves' },
   { name: 'Air Pollution', path: '/air-pollution' },
   { name: 'Flooding', path: '/flooding' },

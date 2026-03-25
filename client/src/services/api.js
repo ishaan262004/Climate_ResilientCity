@@ -18,6 +18,7 @@ api.interceptors.request.use((config) => {
 
 export const fetchAQI = () => api.get('/aqi').then(res => res.data);
 export const fetchWeather = () => api.get('/weather').then(res => res.data);
+export const fetchForecast = () => api.get('/weather/forecast').then(res => res.data);
 export const fetchAlerts = () => api.get('/alerts').then(res => res.data);
 export const fetchReports = () => api.get('/reports').then(res => res.data);
 
