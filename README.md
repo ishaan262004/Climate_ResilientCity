@@ -2,8 +2,6 @@
 
 A full-stack climate resilience and environmental awareness platform for Delhi, India.
 
-![License](https://img.shields.io/badge/license-MIT-green)
-![Stack](https://img.shields.io/badge/stack-React%20%7C%20Node.js%20%7C%20MongoDB-blue)
 
 ## ✨ Features
 
@@ -134,6 +132,3 @@ npm run build
 - Deploy the `server/` directory
 - Update `CLIENT_URL` to your Vercel domain
 
-## 📄 License
-
-MIT © Resilient City
