@@ -8,6 +8,8 @@ import AirPollution from './pages/AirPollution';
 import Flooding from './pages/Flooding';
 import Environment from './pages/Environment';
 import Weather from './pages/Weather';
+import ClimateRisk from './pages/ClimateRisk';
+import ClimateStory from './pages/ClimateStory';
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
           <Route path="/flooding" element={<Flooding />} />
           <Route path="/environment" element={<Environment />} />
           <Route path="/weather" element={<Weather />} />
+          <Route path="/climate-risk" element={<ClimateRisk />} />
+          <Route path="/climate-story" element={<ClimateStory />} />
         </Routes>
         <Footer />
         <AIChatbot />

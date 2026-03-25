@@ -4,6 +4,7 @@ import DashboardSection from '../components/dashboard/DashboardSection';
 import ClimateSection from '../components/climate/ClimateSection';
 import AlertsBanner from '../components/alerts/AlertsBanner';
 import ReportForm from '../components/community/ReportForm';
+import ClimateRiskPanel from '../components/risk/ClimateRiskPanel';
 import { useSocket } from '../hooks/useSocket';
 
 // Lazy load heavy components
@@ -31,6 +32,7 @@ export default function Home() {
     <main>
       <HeroSection />
       <DashboardSection />
+      <ClimateRiskPanel />
       <ClimateSection />
       <AlertsBanner socketAlerts={alerts} />
       <Suspense fallback={<MapFallback />}>

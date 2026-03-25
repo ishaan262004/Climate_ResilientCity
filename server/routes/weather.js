@@ -32,7 +32,88 @@ const wmoCodeToCondition = (code) => {
   return map[code] || { condition: 'Unknown', icon: '03d' };
 };
 
-// Fetch from OpenWeather API (primary)
+// Fetch from RapidAPI OpenWeather (primary — user's RapidAPI key)
+async function fetchRapidAPIWeather() {
+  const rapidKey = process.env.RAPIDAPI_KEY;
+  if (!rapidKey) throw new Error('No RapidAPI key');
+
+  const currentUrl = `https://open-weather13.p.rapidapi.com/city/delhi/EN`;
+  const currentRes = await fetch(currentUrl, {
+    headers: {
+      'x-rapidapi-key': rapidKey,
+      'x-rapidapi-host': 'open-weather13.p.rapidapi.com',
+    },
+  });
+
+  if (!currentRes.ok) throw new Error(`RapidAPI weather: ${currentRes.status}`);
+  const data = await currentRes.json();
+
+  // Build forecast from 5-day endpoint
+  const forecastUrl = `https://open-weather13.p.rapidapi.com/city/fivedaysforcast/delhi/EN`;
+  let forecastDays = [];
+  try {
+    const fRes = await fetch(forecastUrl, {
+      headers: {
+        'x-rapidapi-key': rapidKey,
+        'x-rapidapi-host': 'open-weather13.p.rapidapi.com',
+      },
+    });
+    if (fRes.ok) {
+      const fData = await fRes.json();
+      const dailyMap = {};
+      const today = new Date().toISOString().split('T')[0];
+      for (const item of (fData.list || [])) {
+        const date = item.dt_txt?.split(' ')[0];
+        if (!date || date === today) continue;
+        if (!dailyMap[date]) dailyMap[date] = { temps: [], conditions: [], icons: [] };
+        // Convert Fahrenheit to Celsius if needed
+        const tempC = data.main?.temp > 100 ? (item.main.temp - 32) * 5/9 : item.main.temp;
+        dailyMap[date].temps.push(tempC);
+        dailyMap[date].conditions.push(item.weather?.[0]?.main || 'Unknown');
+        dailyMap[date].icons.push(item.weather?.[0]?.icon?.replace('n', 'd') || '03d');
+      }
+      forecastDays = Object.entries(dailyMap).slice(0, 5).map(([date, d]) => ({
+        date,
+        day: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
+        tempHigh: Math.round(Math.max(...d.temps)),
+        tempLow: Math.round(Math.min(...d.temps)),
+        condition: d.conditions[Math.floor(d.conditions.length / 2)],
+        icon: d.icons[Math.floor(d.icons.length / 2)],
+      }));
+    }
+  } catch (e) { console.warn('RapidAPI forecast failed:', e.message); }
+
+  // RapidAPI OpenWeather may return in Fahrenheit — detect and convert
+  const rawTemp = data.main?.temp || 25;
+  const isFahrenheit = rawTemp > 60; // heuristic
+  const toC = (t) => isFahrenheit ? Math.round((t - 32) * 5 / 9) : Math.round(t);
+
+  return {
+    source: 'rapidapi-openweather',
+    current: {
+      city: 'Delhi',
+      temperature: toC(rawTemp),
+      feelsLike: toC(data.main?.feels_like || rawTemp),
+      tempMin: toC(data.main?.temp_min || rawTemp),
+      tempMax: toC(data.main?.temp_max || rawTemp),
+      humidity: data.main?.humidity || 50,
+      pressure: data.main?.pressure || 1013,
+      windSpeed: Math.round((data.wind?.speed || 0) * 3.6),
+      windDeg: data.wind?.deg || 0,
+      visibility: Math.round((data.visibility || 10000) / 1000),
+      condition: data.weather?.[0]?.main || 'Unknown',
+      description: data.weather?.[0]?.description || 'unknown',
+      icon: data.weather?.[0]?.icon || '03d',
+      sunrise: data.sys?.sunrise ? new Date(data.sys.sunrise * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : null,
+      sunset: data.sys?.sunset ? new Date(data.sys.sunset * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) : null,
+      uvIndex: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    forecast: forecastDays,
+  };
+}
+
+// Fetch from OpenWeather API (secondary — direct API key)
 async function fetchOpenWeather() {
   const apiKey = process.env.OPENWEATHER_API_KEY;
   if (!apiKey) throw new Error('No OpenWeather API key');
@@ -151,8 +232,17 @@ async function fetchOpenMeteo() {
   };
 }
 
-// GET /api/weather — current + forecast with fallback
+// GET /api/weather — current + forecast with fallback chain: RapidAPI → OpenWeather → Open-Meteo
 router.get('/', async (req, res) => {
+  // 1. Try RapidAPI OpenWeather
+  try {
+    const data = await fetchRapidAPIWeather();
+    return res.json(data);
+  } catch (err) {
+    console.warn('RapidAPI weather failed:', err.message);
+  }
+
+  // 2. Try direct OpenWeather
   try {
     const data = await fetchOpenWeather();
     return res.json(data);
@@ -160,6 +250,7 @@ router.get('/', async (req, res) => {
     console.warn('OpenWeather failed, falling back to Open-Meteo:', err.message);
   }
 
+  // 3. Fallback to Open-Meteo
   try {
     const data = await fetchOpenMeteo();
     return res.json(data);
@@ -169,8 +260,15 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/weather/forecast — 5-day only
+// GET /api/weather/forecast — 5-day only (RapidAPI → OpenWeather → Open-Meteo)
 router.get('/forecast', async (req, res) => {
+  try {
+    const data = await fetchRapidAPIWeather();
+    return res.json({ source: data.source, forecast: data.forecast });
+  } catch (err) {
+    console.warn('RapidAPI forecast failed:', err.message);
+  }
+
   try {
     const data = await fetchOpenWeather();
     return res.json({ source: data.source, forecast: data.forecast });

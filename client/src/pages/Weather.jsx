@@ -113,38 +113,55 @@ const fadeUp = {
 };
 
 /* ─── metric card ─── */
-function MetricCard({ icon, label, value, unit, delay = 0 }) {
+function MetricCard({ icon, label, value, unit, color = '#22c55e', delay = 0 }) {
   return (
     <motion.div
       variants={fadeUp}
-      className="glass rounded-2xl p-4 sm:p-5 flex flex-col items-center gap-2 group hover:bg-white/[0.06] transition-all duration-300 cursor-default"
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="rounded-[18px] p-5 flex flex-col items-center gap-3 group cursor-default relative overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.04)' }}
     >
-      <div className="text-white/40 group-hover:text-resilient-green transition-colors duration-300">{icon}</div>
-      <div className="text-xl sm:text-2xl font-bold tracking-tight">
-        {value ?? '—'}<span className="text-sm font-normal text-white/40 ml-1">{unit}</span>
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}25, transparent)` }} />
+      <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: `${color}0c` }} />
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${color}08`, border: `1px solid ${color}15` }}>
+        <div style={{ color }}>{icon}</div>
       </div>
-      <div className="text-xs text-white/40 uppercase tracking-widest">{label}</div>
+      <div className="text-xl sm:text-2xl font-black font-mono tabular-nums tracking-tight">
+        {value ?? '—'}<span className="text-[11px] font-normal text-white/25 ml-1">{unit}</span>
+      </div>
+      <div className="text-[9px] text-white/25 uppercase tracking-[0.15em] font-medium">{label}</div>
     </motion.div>
   );
 }
 
 /* ─── forecast card ─── */
 function ForecastCard({ day, tempHigh, tempLow, condition, icon }) {
+  const tempRange = 50;
+  const highPct = Math.min((tempHigh / tempRange) * 100, 100);
+  const lowPct = Math.min((tempLow / tempRange) * 100, 100);
+  const barColor = tempHigh >= 40 ? '#ef4444' : tempHigh >= 35 ? '#f97316' : tempHigh >= 28 ? '#eab308' : '#22c55e';
   return (
     <motion.div
       variants={fadeUp}
-      className="glass rounded-2xl p-4 sm:p-5 flex flex-col items-center gap-3 min-w-[130px] group hover:bg-white/[0.06] transition-all duration-300 cursor-default"
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="rounded-[18px] p-5 flex flex-col items-center gap-3 min-w-[130px] group cursor-default relative overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.015)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.04)' }}
     >
-      <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">{day}</span>
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${barColor}20, transparent)` }} />
+      <span className="text-[10px] font-semibold text-white/40 uppercase tracking-[0.15em]">{day}</span>
       {icon ? (
-        <img src={conditionIcon(icon)} alt={condition} className="w-12 h-12 drop-shadow-lg" />
+        <img src={conditionIcon(icon)} alt={condition} className="w-12 h-12 drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]" />
       ) : (
         getConditionEmoji(condition)
       )}
-      <span className="text-xs text-white/40 capitalize">{condition}</span>
+      <span className="text-[10px] text-white/30 capitalize">{condition}</span>
+      {/* Temp range bar */}
+      <div className="w-full h-1.5 bg-white/[0.03] rounded-full overflow-hidden relative">
+        <div className="absolute h-full rounded-full" style={{ left: `${lowPct}%`, width: `${highPct - lowPct}%`, background: `linear-gradient(90deg, ${barColor}60, ${barColor})`, boxShadow: `0 0 6px ${barColor}30` }} />
+      </div>
       <div className="flex gap-2 items-baseline">
-        <span className="text-lg font-bold">{tempHigh}°</span>
-        <span className="text-sm text-white/30">{tempLow}°</span>
+        <span className="text-lg font-black font-mono" style={{ color: barColor }}>{tempHigh}°</span>
+        <span className="text-sm text-white/20 font-mono">{tempLow}°</span>
       </div>
     </motion.div>
   );
@@ -209,6 +226,8 @@ export default function Weather() {
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Dynamic background gradient */}
       <div className="fixed inset-0 pointer-events-none transition-all duration-1000" style={{ background: bgGradient }} />
+      {/* Secondary ambient orb */}
+      <div className="fixed top-40 right-1/4 w-[400px] h-[300px] rounded-full blur-[180px] opacity-[0.04] pointer-events-none" style={{ background: 'radial-gradient(ellipse, #06b6d4, transparent 65%)' }} />
 
       {/* Rain effect for rainy conditions */}
       {w?.condition?.toLowerCase().includes('rain') && (
@@ -318,12 +337,12 @@ export default function Weather() {
             viewport={{ once: true, margin: '-50px' }}
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"
           >
-            <MetricCard icon={<Droplets className="w-5 h-5" />} label="Humidity" value={w?.humidity} unit="%" />
-            <MetricCard icon={<Wind className="w-5 h-5" />} label="Wind" value={w?.windSpeed} unit="km/h" />
-            <MetricCard icon={<Eye className="w-5 h-5" />} label="Visibility" value={w?.visibility} unit="km" />
-            <MetricCard icon={<Gauge className="w-5 h-5" />} label="Pressure" value={w?.pressure} unit="hPa" />
-            <MetricCard icon={<Sunrise className="w-5 h-5" />} label="Sunrise" value={w?.sunrise} unit="" />
-            <MetricCard icon={<Sunset className="w-5 h-5" />} label="Sunset" value={w?.sunset} unit="" />
+            <MetricCard icon={<Droplets className="w-5 h-5" />} label="Humidity" value={w?.humidity} unit="%" color="#06b6d4" />
+            <MetricCard icon={<Wind className="w-5 h-5" />} label="Wind" value={w?.windSpeed} unit="km/h" color="#22c55e" />
+            <MetricCard icon={<Eye className="w-5 h-5" />} label="Visibility" value={w?.visibility} unit="km" color="#a855f7" />
+            <MetricCard icon={<Gauge className="w-5 h-5" />} label="Pressure" value={w?.pressure} unit="hPa" color="#f97316" />
+            <MetricCard icon={<Sunrise className="w-5 h-5" />} label="Sunrise" value={w?.sunrise} unit="" color="#eab308" />
+            <MetricCard icon={<Sunset className="w-5 h-5" />} label="Sunset" value={w?.sunset} unit="" color="#ef4444" />
           </motion.section>
 
           {/* ───── 5-DAY FORECAST ───── */}
@@ -334,7 +353,7 @@ export default function Weather() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-lg font-semibold text-white/70 mb-4 tracking-wide">5-Day Forecast</h2>
+              <h2 className="font-display font-bold text-xl text-white mb-5 flex items-center gap-2">5-Day <span className="text-emerald-400">Forecast</span></h2>
               <motion.div
                 variants={stagger}
                 initial="hidden"
@@ -357,7 +376,7 @@ export default function Weather() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-lg font-semibold text-white/70 mb-4 tracking-wide">Today's Climate Insights</h2>
+              <h2 className="font-display font-bold text-xl text-white mb-5 flex items-center gap-2">Today's <span className="text-cyan-400">Climate Insights</span></h2>
               <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
                 {insights.map((ins, i) => (
                   <motion.div
@@ -366,7 +385,8 @@ export default function Weather() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1, duration: 0.4 }}
-                    className={`rounded-2xl border p-5 flex gap-4 items-start ${ins.bg}`}
+                    whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    className={`rounded-[18px] border p-5 flex gap-4 items-start cursor-default ${ins.bg}`}
                   >
                     <div className={`mt-0.5 ${ins.color}`}>{ins.icon}</div>
                     <div>

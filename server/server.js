@@ -36,6 +36,9 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/alerts', require('./routes/alerts'));
 app.use('/api/aqi', require('./routes/aqi'));
 app.use('/api/weather', require('./routes/weather'));
+app.use('/api/climate-risk', require('./routes/climateRisk'));
+app.use('/api', require('./routes/gemini'));
+app.use('/api/aqi-map', require('./routes/aqiMap'));
 
 // Health check
 app.get('/api/health', (req, res) => {
