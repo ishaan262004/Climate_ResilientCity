@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:5001';
+// Socket.IO is only available in local development
+// In production (Vercel), we skip WebSocket connections entirely
+const IS_PRODUCTION = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
 
 export function useSocket() {
   const [socket, setSocket] = useState(null);
@@ -9,28 +10,35 @@ export function useSocket() {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: 1000,
-    });
+    // Skip socket connection in production (serverless doesn't support WebSockets)
+    if (IS_PRODUCTION) return;
 
-    newSocket.on('connect', () => {
-      setConnected(true);
-    });
+    let newSocket;
+    try {
+      const { io } = require('socket.io-client');
+      newSocket = io('http://localhost:5001', {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        timeout: 5000,
+      });
 
-    newSocket.on('disconnect', () => {
-      setConnected(false);
-    });
+      newSocket.on('connect', () => setConnected(true));
+      newSocket.on('disconnect', () => setConnected(false));
+      newSocket.on('newAlert', (alert) => setAlerts(prev => [alert, ...prev]));
+      newSocket.on('connect_error', () => {
+        // Silently fail — server may not be running
+        setConnected(false);
+      });
 
-    newSocket.on('newAlert', (alert) => {
-      setAlerts(prev => [alert, ...prev]);
-    });
-
-    setSocket(newSocket);
+      setSocket(newSocket);
+    } catch (e) {
+      // socket.io-client may not be available
+      console.warn('Socket.IO not available:', e.message);
+    }
 
     return () => {
-      newSocket.close();
+      if (newSocket) newSocket.close();
     };
   }, []);
 

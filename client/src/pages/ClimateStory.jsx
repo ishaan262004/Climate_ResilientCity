@@ -53,25 +53,29 @@ const OUTLOOK = {
 };
 
 function buildNarrative(data) {
+  if (!data?.weather || !data?.risk || !data?.resilience) return null;
   const ctx = {
-    city: data.city,
-    temp: data.weather.temperature,
-    humidity: data.weather.humidity,
-    rainfall: data.weather.rainfall,
-    aqi: data.weather.aqi,
-    resScore: data.resilience.score,
-    resGrade: data.resilience.grade,
+    city: data.city || 'Delhi',
+    temp: data.weather.temperature ?? '--',
+    humidity: data.weather.humidity ?? '--',
+    rainfall: data.weather.rainfall ?? 0,
+    aqi: data.weather.aqi ?? '--',
+    resScore: data.resilience?.score ?? '--',
+    resGrade: data.resilience?.grade ?? '--',
   };
 
-  // Determine worst risk
-  const risks = [data.risk.flood.risk, data.risk.heatwave.risk, data.risk.pollution.risk];
+  const risks = [
+    data.risk?.flood?.risk || 'Low',
+    data.risk?.heatwave?.risk || 'Low',
+    data.risk?.pollution?.risk || 'Low',
+  ];
   const overallSeverity = risks.includes('High') ? 'High' : risks.includes('Medium') ? 'Medium' : 'Low';
 
   const introArr = INTROS[overallSeverity];
   const intro = introArr[Math.floor(Math.random() * introArr.length)](ctx);
-  const flood = FLOOD_FRAGMENTS[data.risk.flood.risk](ctx);
-  const heat = HEAT_FRAGMENTS[data.risk.heatwave.risk](ctx);
-  const pollution = POLLUTION_FRAGMENTS[data.risk.pollution.risk](ctx);
+  const flood = FLOOD_FRAGMENTS[data.risk?.flood?.risk || 'Low'](ctx);
+  const heat = HEAT_FRAGMENTS[data.risk?.heatwave?.risk || 'Low'](ctx);
+  const pollution = POLLUTION_FRAGMENTS[data.risk?.pollution?.risk || 'Low'](ctx);
   const outlook = OUTLOOK[overallSeverity](ctx);
 
   return { intro, flood, heat, pollution, outlook, severity: overallSeverity };
@@ -321,11 +325,11 @@ export default function ClimateStory() {
             >
               <div className="flex flex-wrap gap-2 justify-center mb-4">
                 {[
-                  { label: 'Temperature', value: `${data.weather.temperature}°C` },
-                  { label: 'Humidity', value: `${data.weather.humidity}%` },
-                  { label: 'Rainfall', value: `${data.weather.rainfall}mm` },
-                  { label: 'AQI', value: data.weather.aqi },
-                  { label: 'Resilience', value: `${data.resilience.score}/100` },
+                  { label: 'Temperature', value: `${data.weather?.temperature ?? '--'}°C` },
+                  { label: 'Humidity', value: `${data.weather?.humidity ?? '--'}%` },
+                  { label: 'Rainfall', value: `${data.weather?.rainfall ?? '--'}mm` },
+                  { label: 'AQI', value: data.weather?.aqi ?? '--' },
+                  { label: 'Resilience', value: `${data.resilience?.score ?? '--'}/100` },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center gap-2 bg-white/[0.02] border border-white/[0.04] rounded-full px-4 py-1.5 backdrop-blur-sm">
                     <span className="text-[9px] text-white/20 uppercase tracking-[0.12em] font-medium">{label}</span>

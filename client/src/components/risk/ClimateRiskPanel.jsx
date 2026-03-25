@@ -116,10 +116,10 @@ export default function ClimateRiskPanel() {
             className="flex flex-wrap gap-4 justify-center mb-8"
           >
             {[
-              { label: 'Temperature', value: `${data.weather.temperature}°C` },
-              { label: 'Humidity',    value: `${data.weather.humidity}%` },
-              { label: 'Rainfall',    value: `${data.weather.rainfall}mm` },
-              { label: 'AQI',         value: data.weather.aqi },
+              { label: 'Temperature', value: `${data.weather?.temperature ?? '--'}°C` },
+              { label: 'Humidity',    value: `${data.weather?.humidity ?? '--'}%` },
+              { label: 'Rainfall',    value: `${data.weather?.rainfall ?? '--'}mm` },
+              { label: 'AQI',         value: data.weather?.aqi ?? '--' },
             ].map(({ label, value }) => (
               <div key={label}
                 className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.06] rounded-full px-4 py-1.5">

@@ -150,11 +150,11 @@ export default function ClimateRiskPage() {
             className="flex flex-wrap gap-2 justify-center"
           >
             {[
-              { label: 'City',        value: data.city },
-              { label: 'Temperature', value: `${data.weather.temperature}°C` },
-              { label: 'Humidity',    value: `${data.weather.humidity}%` },
-              { label: 'Rainfall',    value: `${data.weather.rainfall}mm` },
-              { label: 'AQI',         value: data.weather.aqi },
+              { label: 'City',        value: data.city || '--' },
+              { label: 'Temperature', value: `${data.weather?.temperature ?? '--'}°C` },
+              { label: 'Humidity',    value: `${data.weather?.humidity ?? '--'}%` },
+              { label: 'Rainfall',    value: `${data.weather?.rainfall ?? '--'}mm` },
+              { label: 'AQI',         value: data.weather?.aqi ?? '--' },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center gap-2 bg-white/[0.02] border border-white/[0.04] rounded-full px-4 py-1.5 backdrop-blur-sm">
                 <span className="text-[10px] text-white/25 uppercase tracking-[0.12em] font-medium">{label}</span>
