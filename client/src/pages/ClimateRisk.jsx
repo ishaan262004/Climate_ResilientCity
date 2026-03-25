@@ -74,18 +74,19 @@ export default function ClimateRiskPage() {
     setError(null);
     setPopupDismissed(false);
     try {
-      const [risk, storedAlerts] = await Promise.all([
-        fetchClimateRisk(targetCity),
-        fetchClimateAlerts(10),
-      ]);
+      const risk = await fetchClimateRisk(targetCity);
       setData(risk);
-      setAlerts(storedAlerts);
-      if (risk.highRisks?.length > 0) setShowPopup(true);
+      if (risk?.highRisks?.length > 0) setShowPopup(true);
     } catch (e) {
       setError('Failed to load climate risk data. Please try again.');
-    } finally {
-      setLoading(false);
     }
+    try {
+      const storedAlerts = await fetchClimateAlerts(10);
+      if (Array.isArray(storedAlerts)) setAlerts(storedAlerts);
+    } catch (e) {
+      // Alerts not available — keep empty array
+    }
+    setLoading(false);
   }, []);
 
   useEffect(() => { loadData(DEFAULT_CITY); }, [loadData]);
