@@ -70,6 +70,10 @@ const aqiHotspots = [
   { pos: [28.6315, 77.2167], name: 'Connaught Place', aqi: 156, color: '#ef4444' },
   { pos: [28.6289, 77.2411], name: 'ITO', aqi: 210, color: '#a855f7' },
   { pos: [28.5562, 77.1000], name: 'IGI Airport', aqi: 148, color: '#f97316' },
+  { pos: [28.5285, 77.2900], name: 'Sarita Vihar', aqi: 195, color: '#ef4444' },
+  { pos: [28.8500, 77.0930], name: 'Narela', aqi: 165, color: '#ef4444' },
+  { pos: [28.6970, 77.1350], name: 'Wazirpur', aqi: 245, color: '#a855f7' },
+  { pos: [28.6850, 77.0150], name: 'Mundka', aqi: 88, color: '#eab308' },
 ];
 
 const floodZones = [
@@ -86,8 +90,8 @@ const userReports = [
 
 const reportColors = { pollution: '#a855f7', flood: '#3b82f6', heatwave: '#ef4444' };
 
-// Visible dark tile options (NOT pure black)
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+// Light map tiles — CARTO Voyager
+const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 const TILE_ATTR = '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
 function MapController() {
@@ -96,8 +100,8 @@ function MapController() {
   return null;
 }
 
-// Popup styled for dark theme
-const popupStyle = { background: '#0f0f0f', color: '#fff', padding: '14px 16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', minWidth: '160px', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' };
+// Popup styled for light theme
+const popupStyle = { background: '#ffffff', color: '#1a1a1a', padding: '14px 16px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.08)', minWidth: '160px', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' };
 
 export default function InteractiveMap() {
   const [activeLayer, setActiveLayer] = useState('all');
@@ -121,8 +125,8 @@ export default function InteractiveMap() {
         .leaflet-popup-content-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
         .leaflet-popup-tip-container { display: none !important; }
         .leaflet-popup-content { margin: 0 !important; }
-        .leaflet-control-zoom a { background: rgba(15,15,15,0.9) !important; color: rgba(255,255,255,0.6) !important; border-color: rgba(255,255,255,0.06) !important; }
-        .leaflet-control-zoom a:hover { background: rgba(34,197,94,0.2) !important; color: #22c55e !important; }
+        .leaflet-control-zoom a { background: #fff !important; color: #333 !important; border-color: #e0e0e0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important; }
+        .leaflet-control-zoom a:hover { background: rgba(34,197,94,0.1) !important; color: #16a34a !important; }
       `}</style>
 
       <div className="container-custom">
@@ -171,7 +175,7 @@ export default function InteractiveMap() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="rounded-[20px] overflow-hidden relative"
-          style={{ border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 0 40px rgba(34,197,94,0.04), inset 0 1px 0 rgba(255,255,255,0.03)' }}
+          style={{ border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 0 60px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.05)' }}
         >
           {/* Top accent */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent z-[1000]" />
@@ -182,7 +186,7 @@ export default function InteractiveMap() {
               zoom={11}
               className="h-full w-full"
               zoomControl={true}
-              style={{ background: '#0a0a0a' }}
+              style={{ background: '#f0f0f0' }}
             >
               <MapController />
               <TileLayer url={TILE_URL} attribution={TILE_ATTR} />
@@ -193,9 +197,9 @@ export default function InteractiveMap() {
                   <Marker key={`aqi-${i}`} position={spot.pos} icon={createLabeledIcon(spot.color, spot.aqi)}>
                     <Popup>
                       <div style={popupStyle}>
-                        <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{spot.name}</p>
+                        <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#1a1a1a' }}>{spot.name}</p>
                         <p style={{ fontSize: '28px', fontWeight: 900, color: spot.color, fontFamily: 'monospace', margin: '4px 0' }}>{spot.aqi}</p>
-                        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>Air Quality Index</p>
+                        <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.4)' }}>Air Quality Index</p>
                       </div>
                     </Popup>
                   </Marker>
@@ -220,9 +224,9 @@ export default function InteractiveMap() {
                   >
                     <Popup>
                       <div style={popupStyle}>
-                        <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{zone.name}</p>
+                        <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#1a1a1a' }}>{zone.name}</p>
                         <p style={{ fontSize: '12px', color: zone.color, fontWeight: 600 }}>{zone.risk} Risk Zone</p>
-                        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>Radius: {zone.radius}m</p>
+                        <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.35)', marginTop: '4px' }}>Radius: {zone.radius}m</p>
                       </div>
                     </Popup>
                   </Circle>
@@ -239,8 +243,8 @@ export default function InteractiveMap() {
                   >
                     <Popup>
                       <div style={popupStyle}>
-                        <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px', textTransform: 'capitalize' }}>{report.type} Report</p>
-                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{report.desc}</p>
+                        <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px', textTransform: 'capitalize', color: '#1a1a1a' }}>{report.type} Report</p>
+                        <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)' }}>{report.desc}</p>
                       </div>
                     </Popup>
                   </Marker>
@@ -249,12 +253,17 @@ export default function InteractiveMap() {
             </MapContainer>
           </div>
 
-          {/* Map legend */}
-          <div className="absolute bottom-4 left-4 z-[1000] flex flex-col gap-1.5 bg-black/80 backdrop-blur-lg rounded-xl border border-white/[0.06] p-3">
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#a855f7', boxShadow: '0 0 6px #a855f780' }} /><span className="text-[9px] text-white/35">Very Unhealthy (200+)</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 6px #ef444480' }} /><span className="text-[9px] text-white/35">Unhealthy (150-200)</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#f97316', boxShadow: '0 0 6px #f9731680' }} /><span className="text-[9px] text-white/35">Moderate (100-150)</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border border-blue-400/40" style={{ background: '#3b82f620' }} /><span className="text-[9px] text-white/35">Flood Zone</span></div>
+          {/* Map legend — all 6 AQI levels */}
+          <div className="absolute bottom-4 left-4 z-[1000] flex flex-col gap-1.5 bg-white/90 backdrop-blur-lg rounded-xl border border-black/[0.06] p-3 shadow-lg">
+            <div className="text-[8px] text-black/40 uppercase tracking-wider font-semibold mb-0.5 pl-0.5">AQI Levels</div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 6px #22c55e80' }} /><span className="text-[9px] text-black/50">Good (0–50)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#eab308', boxShadow: '0 0 6px #eab30880' }} /><span className="text-[9px] text-black/50">Moderate (51–100)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#f97316', boxShadow: '0 0 6px #f9731680' }} /><span className="text-[9px] text-black/50">Unhealthy-Sensitive (101–150)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 6px #ef444480' }} /><span className="text-[9px] text-black/50">Unhealthy (151–200)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#a855f7', boxShadow: '0 0 6px #a855f780' }} /><span className="text-[9px] text-black/50">Very Unhealthy (201–300)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full" style={{ background: '#be123c', boxShadow: '0 0 6px #be123c80' }} /><span className="text-[9px] text-black/50">Hazardous (300+)</span></div>
+            <div className="h-px bg-black/[0.06] my-1" />
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border border-blue-400/40" style={{ background: '#3b82f620' }} /><span className="text-[9px] text-black/50">Flood Zone</span></div>
           </div>
         </motion.div>
       </div>

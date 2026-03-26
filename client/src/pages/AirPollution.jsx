@@ -15,8 +15,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Stadia dark tiles — visible roads & labels (NOT pure black)
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+// Light map tiles — CARTO Voyager
+const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 const TILE_ATTR = '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
 // ─── AQI color system ────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ function FitBounds({ points }) {
 }
 
 // Popup style
-const pStyle = { background:'#0f0f0f', color:'#fff', padding:'14px 16px', borderRadius:'14px', border:'1px solid rgba(255,255,255,0.08)', minWidth:'160px', boxShadow:'0 8px 32px rgba(0,0,0,0.6)' };
+const pStyle = { background:'#ffffff', color:'#1a1a1a', padding:'14px 16px', borderRadius:'14px', border:'1px solid rgba(0,0,0,0.08)', minWidth:'160px', boxShadow:'0 8px 32px rgba(0,0,0,0.12)' };
 
 // CSS overrides for maps
 const mapCSS = `
@@ -116,8 +116,8 @@ const mapCSS = `
   .leaflet-popup-content-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
   .leaflet-popup-tip-container { display: none !important; }
   .leaflet-popup-content { margin: 0 !important; }
-  .leaflet-control-zoom a { background: rgba(15,15,15,0.9) !important; color: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.06) !important; }
-  .leaflet-control-zoom a:hover { background: rgba(168,85,247,0.2) !important; color: #a855f7 !important; }
+  .leaflet-control-zoom a { background: #fff !important; color: #333 !important; border-color: #e0e0e0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important; }
+  .leaflet-control-zoom a:hover { background: rgba(168,85,247,0.1) !important; color: #a855f7 !important; }
 `;
 
 // ─── Big AQI gauge ───────────────────────────────────────────────────────────
@@ -321,17 +321,17 @@ export default function AirPollution() {
             <div className="h-[480px] relative z-0">
               {mapView === 'delhi' ? (
                 validDelhiStations.length > 0 ? (
-                  <MapContainer key="delhi-map" center={[28.6139, 77.2090]} zoom={11} className="h-full w-full" style={{ background: '#0a0a0a' }} zoomControl={true}>
+                  <MapContainer key="delhi-map" center={[28.6139, 77.2090]} zoom={11} className="h-full w-full" style={{ background: '#f0f0f0' }} zoomControl={true}>
                     <TileLayer url={TILE_URL} attribution={TILE_ATTR} />
                     <FitBounds points={validDelhiStations} />
                     {validDelhiStations.map((station, i) => (
                       <Marker key={i} position={[station.lat, station.lng]} icon={aqiIcon(station.aqi, 38)}>
                         <Popup>
                           <div style={pStyle}>
-                            <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{station.name}</p>
+                            <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#1a1a1a' }}>{station.name}</p>
                             <p style={{ fontSize: '28px', fontWeight: 900, color: aqiColor(station.aqi), fontFamily: 'monospace', margin: '4px 0' }}>{station.aqi}</p>
                             <p style={{ fontSize: '11px', color: aqiColor(station.aqi), fontWeight: 600, marginBottom: '6px' }}>{aqiLabel(station.aqi)}</p>
-                            {station.pm25 && <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>PM2.5: {station.pm25} · PM10: {station.pm10 || '—'}</p>}
+                            {station.pm25 && <p style={{ fontSize: '10px', color: 'rgba(0,0,0,0.35)' }}>PM2.5: {station.pm25} · PM10: {station.pm10 || '—'}</p>}
                           </div>
                         </Popup>
                       </Marker>
@@ -347,13 +347,13 @@ export default function AirPollution() {
                 )
               ) : (
                 validIndiaCities.length > 0 ? (
-                  <MapContainer key="india-map" center={[22.5, 78.9]} zoom={5} className="h-full w-full" style={{ background: '#0a0a0a' }} zoomControl={true}>
+                  <MapContainer key="india-map" center={[22.5, 78.9]} zoom={5} className="h-full w-full" style={{ background: '#f0f0f0' }} zoomControl={true}>
                     <TileLayer url={TILE_URL} attribution={TILE_ATTR} />
                     {validIndiaCities.map((city, i) => (
                       <Marker key={i} position={[city.lat, city.lng]} icon={aqiIcon(city.aqi, 40)}>
                         <Popup>
                           <div style={pStyle}>
-                            <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{city.name}</p>
+                            <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#1a1a1a' }}>{city.name}</p>
                             <p style={{ fontSize: '28px', fontWeight: 900, color: aqiColor(city.aqi), fontFamily: 'monospace', margin: '4px 0' }}>{city.aqi}</p>
                             <p style={{ fontSize: '11px', color: aqiColor(city.aqi), fontWeight: 600 }}>{aqiLabel(city.aqi)}</p>
                           </div>
@@ -370,12 +370,13 @@ export default function AirPollution() {
                   </div>
                 )
               )}
-              {/* Legend */}
-              <div className="absolute bottom-3 left-3 z-[1000] flex flex-col gap-1 bg-black/80 backdrop-blur-lg rounded-xl border border-white/[0.06] p-2.5">
-                {aqiScale.slice(0, 4).map(s => (
+              {/* Legend — all 6 AQI levels */}
+              <div className="absolute bottom-3 left-3 z-[1000] flex flex-col gap-1 bg-white/90 backdrop-blur-lg rounded-xl border border-black/[0.06] p-2.5 shadow-lg">
+                <div className="text-[7px] text-black/40 uppercase tracking-wider font-semibold mb-0.5 pl-0.5">AQI Levels</div>
+                {aqiScale.map(s => (
                   <div key={s.range} className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ background: s.color, boxShadow: `0 0 5px ${s.color}60` }} />
-                    <span className="text-[8px] text-white/30">{s.label}</span>
+                    <span className="text-[8px] text-black/50">{s.label} ({s.range})</span>
                   </div>
                 ))}
               </div>

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import HeroSection from '../components/hero/HeroSection';
 import DashboardSection from '../components/dashboard/DashboardSection';
+import HomeChartsSection from '../components/dashboard/HomeChartsSection';
 import ClimateSection from '../components/climate/ClimateSection';
 import AlertsBanner from '../components/alerts/AlertsBanner';
 import ReportForm from '../components/community/ReportForm';
@@ -32,6 +33,7 @@ export default function Home() {
     <main>
       <HeroSection />
       <DashboardSection />
+      <HomeChartsSection />
       <ClimateRiskPanel />
       <ClimateSection />
       <AlertsBanner socketAlerts={alerts} />
