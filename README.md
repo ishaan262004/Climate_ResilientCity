@@ -1,9 +1,9 @@
-# 🌍 Resilient City
+#  Resilient City
 
 A full-stack climate resilience and environmental awareness platform for Delhi, India.
 
 
-## ✨ Features
+##  Features
 
 - **3D Earth Hero** — Interactive Three.js globe with scroll-based animations
 - **Live Dashboard** — Real-time AQI data for 8 Delhi areas 
@@ -14,7 +14,7 @@ A full-stack climate resilience and environmental awareness platform for Delhi, 
 - **AI Chatbot** — Climate-focused chatbot for quick information
 - **JWT Authentication** — Secure signup/login system
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 - React 18 + Vite
@@ -30,7 +30,7 @@ A full-stack climate resilience and environmental awareness platform for Delhi, 
 - JWT + bcrypt (auth)
 - Socket.IO (real-time)
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js 18+
@@ -105,7 +105,7 @@ environment/
 └── README.md
 ```
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -118,7 +118,7 @@ environment/
 | POST | /api/auth/signup | User registration |
 | POST | /api/auth/login | User login |
 
-## ☁️ Deployment
+##  Deployment
 
 ### Frontend (Vercel)
 ```bash
@@ -127,8 +127,5 @@ npm run build
 # Deploy the dist/ folder to Vercel
 ```
 
-### Backend (Render/Railway)
-- Set environment variables in the dashboard
-- Deploy the `server/` directory
-- Update `CLIENT_URL` to your Vercel domain
+
 
