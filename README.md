@@ -56,6 +56,7 @@ npm install
 ### Running Locally
 
 ```bash
+
 # Terminal 1 — Start backend
 cd server
 npm start
