@@ -6,7 +6,7 @@ A full-stack climate resilience and environmental awareness platform for Delhi, 
 ##  Features
 
 - **3D Earth Hero** — Interactive Three.js globe with scroll-based animations
-- **Live Dashboard** — Real-time AQI data for 8 Delhi areas 
+- **Live Dashboard** — Real-time AQI data for several Delhi-NCR areas 
 - **Climate Risk Sections** — Detailed pages on heatwaves, air pollution, flooding, and environmental issues
 - **Interactive Map** — Leaflet map with AQI hotspots, flood zones, and user reports
 - **Community Reporting** — Submit environmental incident reports
